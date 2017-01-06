@@ -4,8 +4,9 @@ import sqlite3
 import bcrypt
 import sys
 
-root = Tk()
-root.title('Test Gui')
+# Best to put this with other initialization code
+#root = Tk()
+#root.title('Test Gui')
 
 class MainFrame(Frame):
 
@@ -15,10 +16,12 @@ class MainFrame(Frame):
         self.label_1 = Label(self, text="Stuff will go here")
         self.label_1.grid(column=0)
 
-        self.pack()
+        # Don't pack here. Do it when this frame is needed.
+        #self.pack()
 
-login = Tk()
-login.title('Test Gui')
+# Tk() only needs to be called once in the program
+#login = Tk()
+#login.title('Test Gui')
 
 class LoginFrame(Frame):
 
@@ -45,7 +48,7 @@ class LoginFrame(Frame):
         self.new_button = Button(self, text="New User", command = self.new_user_clicked)
         self.new_button.grid(row=4, column=1)
 
-        self.pack()
+        #self.pack()
 
     def new_user_clicked(self):
         user = self.entry_1.get()
@@ -87,9 +90,11 @@ class LoginFrame(Frame):
 
         if bcrypt.checkpw(userpass, check):
             print "Login Successfull..."
-            login.destroy()
-            root.deiconify() # Bring root window up if login successfull.
-            root.wm_state('zoomed') # fit to screen
+            # After the login is successful, destroy the login frame and pack the main frame
+            l.destroy()
+            m.pack()
+            # Modify the geometry of the window if desired
+            #root.geometry('%dx%d+%d+%d' % (w, h, x, y)) # --- end
 
         else:
             print "Login Failed..."
@@ -97,15 +102,25 @@ class LoginFrame(Frame):
 
         db.close()
 
+
+# Best to keep initialization code all together
+root = Tk()
+root.title('Test Gui')
+
 w = 300 # open login window on center of screen ---
 h = 125
-ws = login.winfo_screenwidth()
-hs = login.winfo_screenheight()
+# The screen info can be retrieved from the root application.
+ws = root.winfo_screenwidth()
+hs = root.winfo_screenheight()
 x = (ws/2) - (w/2)
 y = (hs/2) - (h/2)
-login.geometry('%dx%d+%d+%d' % (w, h, x, y)) # --- end
+root.geometry('%dx%d+%d+%d' % (w, h, x, y)) # --- end
 
-LoginFrame(login)
-MainFrame(root) 
-root.withdraw() # hide root window until login successfull
+# Create the login frame
+l = LoginFrame(root)
+# Pack the login frame to add it to the application
+l.pack()
+# Create the main frame but do not pack it, we will pack it after successful login
+m = MainFrame(root) 
+# Start the program running
 root.mainloop()
